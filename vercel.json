@@ -1,25 +1,17 @@
 {
-  "version": 3,
+  "version": 2,
   "builds": [
     {
       "src": "api-server/src/index.ts",
-      "use": "@vercel/node",
-      "config": { "runtime": "nodejs18.x" }
+      "use": "@vercel/node"
     },
     {
-      "src": "src/**/*",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+      "src": "index.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "api-server/src/index.ts"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "/api/(.*)", "dest": "/api-server/src/index.ts" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
