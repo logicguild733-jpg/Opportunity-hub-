@@ -1,18 +1,8 @@
-// src/App.tsx
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Leads from "./pages/Leads";
-import NotFound from "./pages/NotFound"; // optional 404 page
-
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/leads" element={<Leads />} />
-        {/* Optional catch-all route for wrong URLs */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
+      <h1>Opportunity Hub ✅</h1>
+      <p>Your app is now running successfully.</p>
+    </div>
   );
 }
