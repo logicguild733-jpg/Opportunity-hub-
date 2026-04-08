@@ -1,13 +1,22 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
-  root: './',       // root folder
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"), // allows "@/..." imports
+    },
+  },
   build: {
-    outDir: 'dist', // Vercel will serve from here
+    outDir: "dist",
+    rollupOptions: {
+      input: path.resolve(__dirname, "index.html"), // ensures main.tsx is found
+    },
   },
   server: {
-    port: 3000
-  }
+    port: 3000,
+    open: true, // optional: opens browser in dev
+  },
 });
