@@ -1,15 +1,11 @@
+// src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 
-// Find the root div from index.html
 const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Root element not found");
 
-if (!rootElement) {
-  throw new Error("Root element not found");
-}
-
-// Render the app
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <App />
