@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import LeadCard from "../components/LeadCard";
-import leadsEmptyImg from "../assets/leads.png"; // your empty image
+import leadsEmptyImg from "../assets/leads.png"; // optional empty image
 
 export default function Leads() {
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     fetchLeads();
@@ -13,6 +14,9 @@ export default function Leads() {
 
   async function fetchLeads() {
     setLoading(true);
+    setErrorMsg("");
+
+    // Fetch leads from Supabase
     const { data, error } = await supabase
       .from("leads")
       .select("*")
@@ -21,9 +25,11 @@ export default function Leads() {
     if (error) {
       console.error("Supabase error:", error);
       setLeads([]);
+      setErrorMsg(error.message || "Failed to fetch leads");
     } else {
       setLeads(data || []);
     }
+
     setLoading(false);
   }
 
@@ -33,9 +39,15 @@ export default function Leads() {
 
       {loading ? (
         <p>Loading leads...</p>
+      ) : errorMsg ? (
+        <p style={{ color: "red" }}>{errorMsg}</p>
       ) : leads.length === 0 ? (
         <div style={{ textAlign: "center", marginTop: "50px" }}>
-          <img src={leadsEmptyImg} alt="No leads" style={{ maxWidth: "300px" }} />
+          <img
+            src={leadsEmptyImg}
+            alt="No leads"
+            style={{ maxWidth: "300px" }}
+          />
           <p>No leads found</p>
         </div>
       ) : (
