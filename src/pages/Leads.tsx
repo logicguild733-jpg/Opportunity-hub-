@@ -1,8 +1,8 @@
 // src/pages/Leads.tsx
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase"; // lib folder
-import LeadCard from "../LeadCard"; // directly in src
-import leadsEmptyImg from "../assets/leads.png"; // assets folder
+import { supabase } from "../lib/supabase";
+import LeadCard from "../LeadCard";
+import leadsEmptyImg from "../empty-leads.png"; // <-- fixed path for Vercel
 
 export default function Leads() {
   const [leads, setLeads] = useState<any[]>([]);
@@ -17,26 +17,27 @@ export default function Leads() {
     setLoading(true);
     setErrorMsg("");
 
-    // Fetch leads from Supabase
-    const { data, error } = await supabase
-      .from("leads")
-      .select("*")
-      .limit(15);
+    try {
+      const { data, error } = await supabase
+        .from("leads")
+        .select("*")
+        .order("id", { ascending: false }) // newest first
+        .limit(15);
 
-    if (error) {
-      console.error("Supabase error:", error);
-      setLeads([]);
-      setErrorMsg(error.message || "Failed to fetch leads");
-    } else {
+      if (error) throw error;
       setLeads(data || []);
+    } catch (err: any) {
+      console.error("Supabase fetch error:", err.message);
+      setLeads([]);
+      setErrorMsg("Failed to fetch leads. Try again later.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
     <div style={{ padding: "20px", fontFamily: "Inter, sans-serif" }}>
-      <h1>Leads Page 📋</h1>
+      <h1>Leads 📋</h1>
 
       {loading ? (
         <p>Loading leads...</p>
@@ -52,7 +53,7 @@ export default function Leads() {
           <p>No leads found</p>
         </div>
       ) : (
-        leads.map((lead, index) => <LeadCard key={index} lead={lead} />)
+        leads.map((lead) => <LeadCard key={lead.id} lead={lead} />)
       )}
     </div>
   );
