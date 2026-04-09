@@ -1,7 +1,8 @@
+// src/pages/Leads.tsx
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
-import LeadCard from "../components/LeadCard";
-import leadsEmptyImg from "../assets/leads.png"; // optional empty image
+import { supabase } from "../lib/supabase"; // lib folder
+import LeadCard from "../LeadCard"; // directly in src
+import leadsEmptyImg from "../assets/leads.png"; // assets folder
 
 export default function Leads() {
   const [leads, setLeads] = useState<any[]>([]);
