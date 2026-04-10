@@ -40,10 +40,7 @@ export default function Dashboard() {
 
   const usage = usageData || (showAll ? allResponse?.usage : matchedResponse?.usage);
 
-  const unlockLimit =
-    (usage as any)?.unlock_limit ??
-    (plan === "gold" ? null : plan === "premium" ? 30 : 15);
-
+  const unlockLimit = getPlanLimit(plan) === 100 ? null : getPlanLimit(plan);
   const activeLeads = showAll
     ? (allResponse?.leads || [])
     : (matchedResponse?.leads || []);
