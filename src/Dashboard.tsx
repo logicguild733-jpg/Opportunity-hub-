@@ -1,100 +1,50 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Search, SlidersHorizontal, Sparkles, X, ChevronDown, Bell, Zap } from "lucide-react";
+import { Search } from "lucide-react";
 import { useLeads, useAllLeads, useLeadUsage } from "@/hooks/use-leads";
-import { useSkills } from "@/hooks/use-skills";
 import { useAuthMe } from "@/hooks/use-auth";
 import { LeadCard } from "@/components/LeadCard";
 import { Input } from "@/components/ui";
-import { toast } from "sonner";
-
-const QUALITY_OPTIONS = ["HOT", "GOOD", "MEDIUM"];
-
-const getAuthHeaders = (): Record<string, string> => {
-  const token = localStorage.getItem("opportunity_token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import { getPlanLimit } from "@/lib/planLimits"; // ✅ FIX ADDED
 
 export default function Dashboard() {
   const { data: user } = useAuthMe();
-  const { data: matchedResponse, isLoading: leadsLoading, refetch: refetchMatched } = useLeads();
-  const { data: allResponse, isLoading: allLoading, refetch: refetchAll } = useAllLeads();
+  const { data: matchedResponse, isLoading: leadsLoading } = useLeads();
+  const { data: allResponse, isLoading: allLoading } = useAllLeads();
   const { data: usageData } = useLeadUsage();
 
   const [search, setSearch] = useState("");
-  const [showAll, setShowAll] = useState(true);
-  const [showFilters, setShowFilters] = useState(false);
-  const [filterIndustry, setFilterIndustry] = useState("");
-  const [filterCountry, setFilterCountry] = useState("");
-  const [filterCity, setFilterCity] = useState("");
-  const [filterQuality, setFilterQuality] = useState<string[]>([]);
+  const [showAll] = useState(true);
 
-  // =========================
-  // 🔥 STABLE ROLE LOGIC FIX
-  // =========================
+  // ✅ ADMIN FIX (STABLE)
   const isAdmin =
     user?.role === "admin" ||
     user?.email === "logicguild733@gmail.com";
 
+  // ✅ PLAN FIX (SINGLE SOURCE)
   const plan = (user as any)?.subscription_plan || "basic";
+  const limit = getPlanLimit(plan);
+  const unlockLimit = limit === 100 ? null : limit;
 
   const usage = usageData || (showAll ? allResponse?.usage : matchedResponse?.usage);
-const limit = getPlanLimit(plan);
-const unlockLimit = limit === 100 ? null : limit;
+
   const activeLeads = showAll
     ? (allResponse?.leads || [])
     : (matchedResponse?.leads || []);
 
   const isLoading = showAll ? allLoading : leadsLoading;
 
+  // ✅ SEARCH FILTER
   const filteredLeads = useMemo(() => {
     if (!activeLeads) return [];
 
     return activeLeads.filter((lead: any) => {
-      const searchWords = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
-
-      const allFields = [
-        lead.client_name,
-        lead.service_needed,
-        lead.description || "",
-        lead.industry || "",
-        lead.lead_text || "",
-        lead.country || "",
-        lead.city || ""
-      ].join(" ").toLowerCase();
-
-      const matchesSearch =
-        searchWords.length === 0 ||
-        searchWords.some(w => allFields.includes(w));
-
-      const matchesIndustry =
-        !filterIndustry ||
-        filterIndustry === "All Industries" ||
-        lead.industry?.toLowerCase() === filterIndustry.toLowerCase();
-
-      const matchesCountry =
-        !filterCountry ||
-        filterCountry === "All Countries" ||
-        lead.country?.toLowerCase() === filterCountry.toLowerCase();
-
-      const matchesCity =
-        !filterCity ||
-        lead.city?.toLowerCase().includes(filterCity.toLowerCase());
-
-      const matchesQuality =
-        filterQuality.length === 0 ||
-        filterQuality.includes(lead.lead_quality);
-
-      return (
-        matchesSearch &&
-        matchesIndustry &&
-        matchesCountry &&
-        matchesCity &&
-        matchesQuality
-      );
+      const text = `${lead.client_name} ${lead.description} ${lead.service_needed}`.toLowerCase();
+      return text.includes(search.toLowerCase());
     });
-  }, [activeLeads, search, filterIndustry, filterCountry, filterCity, filterQuality]);
+  }, [activeLeads, search]);
 
+  // ✅ SUBSCRIPTION CHECK
   const isInactive = user?.subscription_status === "inactive";
 
   if (isInactive) {
@@ -104,12 +54,6 @@ const unlockLimit = limit === 100 ? null : limit;
         <p className="text-muted-foreground mt-2">
           Please contact support to renew your subscription.
         </p>
-        <a
-          href="mailto:logicguild733@gmail.com"
-          className="mt-6 text-primary underline"
-        >
-          Contact Support
-        </a>
       </div>
     );
   }
@@ -117,7 +61,7 @@ const unlockLimit = limit === 100 ? null : limit;
   return (
     <div className="space-y-6">
 
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex justify-between items-center">
         <div>
           <motion.h1 className="text-3xl font-bold">
@@ -136,27 +80,24 @@ const unlockLimit = limit === 100 ? null : limit;
         )}
       </div>
 
-      {/* Search */}
-      <div className="flex gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
-          <Input
-            className="pl-9"
-            placeholder="Search leads..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="border px-4 rounded-xl"
-        >
-          Filters
-        </button>
+      {/* SEARCH */}
+      <div className="relative">
+        <Search className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
+        <Input
+          className="pl-9"
+          placeholder="Search leads..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
-      {/* Loading */}
+      {/* LIMIT INFO (OPTIONAL BUT USEFUL) */}
+      <div className="text-sm text-muted-foreground">
+        Plan: <b>{plan}</b> | Limit:{" "}
+        <b>{unlockLimit === null ? "Unlimited" : unlockLimit}</b>
+      </div>
+
+      {/* LEADS */}
       {isLoading ? (
         <p>Loading leads...</p>
       ) : filteredLeads.length === 0 ? (
