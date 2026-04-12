@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,10 +16,14 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 export default function Login() {
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
   const login = useLogin();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
 
@@ -28,12 +31,14 @@ export default function Login() {
     try {
       const result = await login.mutateAsync(data);
       toast.success("Welcome back!");
+
       const role = (result as any)?.user?.role;
       const email = (result as any)?.user?.email;
+
       if (role === "admin" || email === "logicguild733@gmail.com") {
-        setLocation("/admin");
+        navigate("/admin");
       } else {
-        setLocation("/dashboard");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to log in");
@@ -55,15 +60,13 @@ export default function Login() {
               </div>
               Opportunity Hub
             </div>
-            
+
             <h2 className="text-3xl font-display font-bold tracking-tight text-foreground">
               Sign in to your account
             </h2>
+
             <p className="mt-2 text-muted-foreground">
-              Don't have an account?{" "}
-              <Link href="/register" className="font-semibold text-primary hover:text-primary/80 transition-colors">
-                Sign up today
-              </Link>
+              Access is invite-only. Please contact admin for your access link.
             </p>
           </motion.div>
 
@@ -81,28 +84,43 @@ export default function Login() {
                   type="email"
                   placeholder="name@example.com"
                   {...register("email")}
-                  className={errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
+                  className={
+                    errors.email
+                      ? "border-destructive focus-visible:ring-destructive"
+                      : ""
+                  }
                 />
-                {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-sm text-destructive">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <a href="#" className="text-sm font-semibold text-primary hover:text-primary/80">
-                    Forgot password?
-                  </a>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   {...register("password")}
-                  className={errors.password ? "border-destructive focus-visible:ring-destructive" : ""}
+                  className={
+                    errors.password
+                      ? "border-destructive focus-visible:ring-destructive"
+                      : ""
+                  }
                 />
-                {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+                {errors.password && (
+                  <p className="text-sm text-destructive">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
-              <Button type="submit" className="w-full text-base h-12 mt-2 gap-2" disabled={login.isPending}>
+              <Button
+                type="submit"
+                className="w-full text-base h-12 mt-2 gap-2"
+                disabled={login.isPending}
+              >
                 {login.isPending ? "Signing in..." : "Sign in"}
                 {!login.isPending && <ArrowRight size={18} />}
               </Button>
@@ -110,30 +128,28 @@ export default function Login() {
           </motion.div>
         </div>
       </div>
-      
+
       <div className="hidden lg:block relative w-1/2 overflow-hidden bg-card">
-        {/* We use an abstract mesh gradient background here */}
         <img
           className="absolute inset-0 h-full w-full object-cover opacity-90"
           src={`${import.meta.env.BASE_URL}auth-bg.png`}
-          alt="Abstract mesh gradient"
+          alt="Abstract background"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-        
+
         <div className="absolute bottom-16 left-16 right-16 z-10 text-white">
-          <motion.blockquote 
+          <motion.blockquote
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.7 }}
             className="space-y-4"
           >
-            <p className="text-3xl font-display font-medium leading-tight text-white drop-shadow-md">
-              "Opportunity Hub has completely transformed how I find clients. 
-              The matching algorithm is incredibly accurate."
+            <p className="text-3xl font-display font-medium leading-tight">
+              "Find real opportunities. Grow faster with better leads."
             </p>
-            <footer className="flex flex-col drop-shadow-md">
-              <span className="font-semibold text-lg text-white">Alex Rivera</span>
-              <span className="text-white/80">Senior Full-Stack Developer</span>
+            <footer className="flex flex-col">
+              <span className="font-semibold text-lg">Opportunity Hub</span>
+              <span className="text-white/80">Lead Generation Platform</span>
             </footer>
           </motion.blockquote>
         </div>
