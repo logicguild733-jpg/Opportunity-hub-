@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Login from "./Login"; // ✅ FIXED PATH
-import InviteRegister from "./pages/InviteRegister";
-import Dashboard from "./pages/Dashboard";
-import Leads from "./pages/Leads";
-import NotFound from "./pages/NotFound";
+import Home from "./Home";
+import Login from "./Login";
+import InviteRegister from "./InviteRegister";
+import Dashboard from "./Dashboard";
+import Leads from "./Leads";
+import NotFound from "./NotFound";
 
 export default function App() {
   return (
@@ -18,7 +18,7 @@ export default function App() {
         {/* Invite signup */}
         <Route path="/invite/:token" element={<InviteRegister />} />
 
-        {/* Protected pages */}
+        {/* Protected */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/leads" element={<Leads />} />
 
