@@ -1,53 +1,54 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+/* PAGES */
 import Home from "./pages/Home";
 import Leads from "./pages/Leads";
 import NotFound from "./pages/NotFound";
 
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import InviteRegister from "./pages/InviteRegister";
-import Admin from "./pages/Admin";
-import Register from "./pages/Register";
-import Reseller from "./pages/Reseller";
-import Skills from "./pages/Skills";
-import Contact from "./pages/Contact";
-import Referral from "./pages/Referral";
-import InactiveSubscription from "./pages/InactiveSubscription";
-import SubscriptionPolicy from "./pages/SubscriptionPolicy";
-import TermsOfService from "./pages/TermsOfService";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
+/* ROOT COMPONENTS (IMPORTANT: NOT /pages) */
+import Login from "./Login";
+import Dashboard from "./Dashboard";
+import InviteRegister from "./InviteRegister";
+import Admin from "./Admin";
+import Register from "./Register";
+import Reseller from "./Reseller";
+import Skills from "./Skills";
+import Referral from "./Referral";
+import Contact from "./Contact";
+import InactiveSubscription from "./InactiveSubscription";
+import SubscriptionPolicy from "./SubscriptionPolicy";
+import TermsOfService from "./TermsOfService";
+import PrivacyPolicy from "./PrivacyPolicy";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public */}
+        {/* PUBLIC */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Invite */}
+        {/* INVITE */}
         <Route path="/invite/:token" element={<InviteRegister />} />
 
-        {/* App */}
+        {/* APP */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/leads" element={<Leads />} />
         <Route path="/reseller" element={<Reseller />} />
         <Route path="/skills" element={<Skills />} />
         <Route path="/referral" element={<Referral />} />
 
-        {/* Admin */}
+        {/* ADMIN */}
         <Route path="/admin" element={<Admin />} />
 
-        {/* Legal */}
+        {/* LEGAL */}
         <Route path="/contact" element={<Contact />} />
-        <Route path="/inactive" element={<InactiveSubscription />} />
-        <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
 
-        {/* 404 */}
+        {/* FALLBACK */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
