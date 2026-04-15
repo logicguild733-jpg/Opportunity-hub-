@@ -1,57 +1,35 @@
-import { motion } from "framer-motion";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-export default function LeadCard({ lead }: any) {
-  // 🔒 LOCKED LEAD
-  if (lead?.isLocked) {
-    return (
-      <motion.div
-        className="p-4 border rounded-2xl bg-muted/40 opacity-70"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <p className="font-semibold text-lg">🔒 Locked Lead</p>
+import Home from "./pages/Home";
+import Leads from "./pages/Leads";
+import NotFound from "./pages/NotFound";
 
-        <p className="text-sm text-muted-foreground mt-1">
-          Upgrade to view full details and contact this client.
-        </p>
+import Login from "./Login";
+import Register from "./Register";
+import Dashboard from "./Dashboard";
+import InviteRegister from "./InviteRegister";
 
-        <p className="text-xs text-muted-foreground mt-3">
-          More opportunities available 🚀
-        </p>
-      </motion.div>
-    );
-  }
-
-  // ✅ NORMAL LEAD
+export default function App() {
   return (
-    <motion.div
-      className="p-4 border rounded-2xl bg-background hover:shadow-md transition"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <h3 className="font-semibold text-lg">
-        {lead.client_name || "Client"}
-      </h3>
+    <BrowserRouter>
+      <Routes>
+        {/* PUBLIC */}
+        <Route path="/" element={<Home />} />
 
-      <p className="text-sm text-muted-foreground mt-1">
-        {lead.service_needed || lead.tags}
-      </p>
+        {/* AUTH */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-      {lead.description && (
-        <p className="text-sm mt-2 line-clamp-3">
-          {lead.description}
-        </p>
-      )}
+        {/* INVITE FLOW */}
+        <Route path="/invite/:token" element={<InviteRegister />} />
 
-      <div className="mt-3 text-xs text-muted-foreground">
-        {lead.country || ""} {lead.city ? `• ${lead.city}` : ""}
-      </div>
+        {/* APP */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/leads" element={<Leads />} />
 
-      {lead.lead_quality && (
-        <div className="mt-2 text-xs font-semibold">
-          Quality: {lead.lead_quality}
-        </div>
-      )}
-    </motion.div>
+        {/* FALLBACK */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
