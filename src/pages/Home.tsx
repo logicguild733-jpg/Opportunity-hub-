@@ -6,7 +6,7 @@ export default function Home() {
 
   useEffect(() => {
     navigate("/login");
-  }, []);
+  }, [navigate]); // ✅ IMPORTANT FIX
 
   return null;
 }
