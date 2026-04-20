@@ -16,37 +16,28 @@ export default function Dashboard() {
   const { data: usageData } = useLeadUsage();
 
   const [search, setSearch] = useState("");
-  const [showAll] = useState(true);
 
-  // ================= ADMIN CHECK =================
+  // ADMIN CHECK
   const isAdmin =
     user?.role === "admin" ||
     user?.email === "logicguild733@gmail.com";
 
-  // ================= PLAN =================
-  const plan = (user as any)?.subscription_plan || "basic";
+  // PLAN
+  const plan = user?.subscription_plan || "basic";
   const limit = getPlanLimit(plan);
-
-  // gold = unlimited
   const unlockLimit = limit === 100 ? null : limit;
 
-  // ================= LEADS =================
-  const usage =
-    usageData || (showAll ? allResponse?.usage : matchedResponse?.usage);
+  // LEADS
+  const activeLeads = allResponse?.leads || [];
+  const usage = usageData || allResponse?.usage;
 
-  const activeLeads = showAll
-    ? allResponse?.leads || []
-    : matchedResponse?.leads || [];
+  const isLoading = allLoading || leadsLoading;
 
-  const isLoading = showAll ? allLoading : leadsLoading;
-
-  // ================= SEARCH FILTER =================
+  // SEARCH FILTER
   const filteredLeads = useMemo(() => {
-    if (!activeLeads) return [];
-
     const q = search.toLowerCase().trim();
 
-    return activeLeads.filter((lead: any) => {
+    return (activeLeads || []).filter((lead: any) => {
       const text = `
         ${lead.client_name || ""}
         ${lead.description || ""}
@@ -60,13 +51,11 @@ export default function Dashboard() {
     });
   }, [activeLeads, search]);
 
-  // ================= INACTIVE ACCOUNT =================
-  const isInactive = user?.subscription_status === "inactive";
-
-  if (isInactive) {
+  // INACTIVE ACCOUNT
+  if (user?.subscription_status === "inactive") {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <h2 className="text-2xl font-bold">Subscription Inactive</h2>
+      <div className="p-6 text-center">
+        <h2 className="text-xl font-bold">Subscription Inactive</h2>
         <p className="text-muted-foreground mt-2">
           Please contact support to renew your subscription.
         </p>
@@ -75,8 +64,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6">
-
+    <div className="space-y-6 p-4">
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <div>
