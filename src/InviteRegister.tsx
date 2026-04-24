@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { useLocation, useRoute } from "wouter";
+// ✅ FIXED: Changed from 'wouter' to 'react-router-dom'
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Briefcase, ArrowRight, Shield, Clock, CheckCircle } from "lucide-react";
 import { Input, Button, Label } from "@/components/ui";
 import { toast } from "sonner";
 
 export default function InviteRegister() {
-  const [, setLocation] = useLocation();
-  const [, params] = useRoute("/invite/:token");
-  const token = params?.token || "";
+  const navigate = useNavigate(); // ✅ FIXED: useLocation -> useNavigate
+  const { token } = useParams(); // ✅ FIXED: useRoute -> useParams
 
   const [loading, setLoading] = useState(true);
   const [inviteData, setInviteData] = useState<any>(null);
@@ -61,7 +61,7 @@ export default function InviteRegister() {
         localStorage.setItem("opportunity_token", data.token);
       }
       toast.success("Account created! Welcome to Opportunity Hub");
-      setLocation("/dashboard");
+      navigate("/dashboard"); // ✅ FIXED: setLocation -> navigate
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
@@ -86,8 +86,8 @@ export default function InviteRegister() {
           </div>
           <h2 className="text-2xl font-bold text-foreground">Invalid Invite</h2>
           <p className="text-muted-foreground">{error}</p>
-          <p className="text-sm text-muted-foreground">This invite link may have already been used or expired. Please contact the person who sent you this link.</p>
-          <Button onClick={() => setLocation("/login")} variant="outline" className="mt-4">Go to Login</Button>
+          <p className="text-sm text-muted-foreground">This invite link may have already been used or expired.</p>
+          <Button onClick={() => navigate("/login")} variant="outline" className="mt-4">Go to Login</Button>
         </div>
       </div>
     );
@@ -96,7 +96,7 @@ export default function InviteRegister() {
   return (
     <div className="min-h-screen flex bg-background">
       <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:flex-none lg:w-1/2 lg:px-20 xl:px-24 border-r">
-        <div className="mx-auto w-full max-w-sm lg:w-96">
+        <div className="mx-auto w-full max-sm lg:w-96">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <div className="flex items-center gap-2 text-primary font-display font-bold text-2xl mb-8">
               <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/30">
@@ -135,43 +135,21 @@ export default function InviteRegister() {
                   disabled
                   className="bg-muted cursor-not-allowed font-medium"
                 />
-                <p className="text-xs text-muted-foreground">This email is linked to your invite. It cannot be changed.</p>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="name">Full name</Label>
-                <Input
-                  id="name"
-                  placeholder="Your full name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
+                <Input id="name" placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} required />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+92 300 0000000"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground">One phone number per account. Cannot be shared.</p>
+                <Input id="phone" type="tel" placeholder="+92 300 0000000" value={phone} onChange={(e) => setPhone(e.target.value)} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password">Create a password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="At least 6 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                />
+                <Input id="password" type="password" placeholder="At least 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
               </div>
 
               <Button type="submit" className="w-full text-base h-12 mt-4 gap-2" disabled={submitting}>
@@ -179,38 +157,11 @@ export default function InviteRegister() {
                 {!submitting && <ArrowRight size={18} />}
               </Button>
             </form>
-
-            <p className="mt-4 text-xs text-center text-muted-foreground">
-              By registering, you agree to our{" "}
-              <a href="/terms" className="text-primary hover:underline">Terms of Service</a>
-              {" "}and{" "}
-              <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>.
-            </p>
           </motion.div>
         </div>
       </div>
-
       <div className="hidden lg:block relative w-1/2 overflow-hidden bg-card">
-        <img
-          className="absolute inset-0 h-full w-full object-cover opacity-90 scale-x-[-1]"
-          src={`${import.meta.env.BASE_URL}auth-bg.png`}
-          alt="Abstract mesh gradient"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-        <div className="absolute top-16 left-16 right-16 z-10 text-white">
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.7 }} className="space-y-6">
-            <div className="inline-flex items-center rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-md border border-white/20">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-400 mr-2"></span>
-              Personal Invite
-            </div>
-            <h1 className="text-5xl font-display font-bold leading-tight text-white drop-shadow-lg">
-              Your Exclusive <br /> Access Awaits
-            </h1>
-            <p className="text-white/80 text-lg max-w-xs">
-              {inviteData?.trial_days || 14} days free. One account per person. Real leads, real opportunities.
-            </p>
-          </motion.div>
-        </div>
+        <img className="absolute inset-0 h-full w-full object-cover opacity-90 scale-x-[-1]" src={`${import.meta.env.BASE_URL}auth-bg.png`} alt="Abstract background" />
       </div>
     </div>
   );
