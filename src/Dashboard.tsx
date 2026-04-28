@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 
-import { useLeads, useAllLeads, useLeadUsage } from "@/hooks/use-leads";
+import { useAllLeads, useLeadUsage } from "@/hooks/use-leads";
 import { useAuthMe } from "@/hooks/use-auth";
 
 import LeadCard from "@/LeadCard";
@@ -11,8 +11,7 @@ import { getPlanLimit } from "@/lib/planLimits";
 
 export default function Dashboard() {
   const { data: user } = useAuthMe();
-  const { data: matchedResponse, isLoading: leadsLoading } = useLeads();
-  const { data: allResponse, isLoading: allLoading } = useAllLeads();
+  const { data: allResponse, isLoading } = useAllLeads();
   const { data: usageData } = useLeadUsage();
 
   const [search, setSearch] = useState("");
@@ -27,11 +26,13 @@ export default function Dashboard() {
   const limit = getPlanLimit(plan);
   const unlockLimit = limit === 100 ? null : limit;
 
-  // LEADS
-  const activeLeads = allResponse?.leads || [];
-  const usage = usageData || allResponse?.usage;
+  // LEADS (SAFE NORMALIZED FIX)
+  const activeLeads =
+    allResponse?.leads ||
+    allResponse?.data ||
+    [];
 
-  const isLoading = allLoading || leadsLoading;
+  const usage = usageData || allResponse?.usage;
 
   // SEARCH FILTER
   const filteredLeads = useMemo(() => {
@@ -69,7 +70,7 @@ export default function Dashboard() {
       <div className="flex justify-between items-center">
         <div>
           <motion.h1 className="text-3xl font-bold">
-            Welcome {user?.name || "User"}
+            Welcome {user?.name || user?.email || "User"}
           </motion.h1>
 
           <p className="text-muted-foreground">
@@ -114,7 +115,7 @@ export default function Dashboard() {
       ) : (
         <div className="grid md:grid-cols-3 gap-4">
           {filteredLeads.map((lead: any, i: number) => (
-            <LeadCard key={i} lead={lead} />
+            <LeadCard key={lead.id || i} lead={lead} />
           ))}
         </div>
       )}
