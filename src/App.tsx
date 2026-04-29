@@ -10,7 +10,8 @@ import Reseller from "./Reseller";
 import Admin from "./Admin";
 import NotFound from "./pages/NotFound";
 
-import ProtectedRoute from "./components/ProtectedRoute";
+// ✅ FIXED IMPORT (no /components)
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function App() {
   return (
