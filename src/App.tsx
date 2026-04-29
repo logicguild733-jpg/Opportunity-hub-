@@ -10,7 +10,6 @@ import Reseller from "./Reseller";
 import Admin from "./Admin";
 import NotFound from "./pages/NotFound";
 
-// ✅ FIXED IMPORT (no /components)
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function App() {
@@ -18,59 +17,38 @@ export default function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* PUBLIC ROUTES */}
+        {/* PUBLIC */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
 
-        {/* PROTECTED ROUTES */}
+        {/* PROTECTED */}
         <Route
           path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
         />
 
         <Route
           path="/leads"
-          element={
-            <ProtectedRoute>
-              <Leads />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Leads /></ProtectedRoute>}
         />
 
         <Route
           path="/skills"
-          element={
-            <ProtectedRoute>
-              <Skills />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Skills /></ProtectedRoute>}
         />
 
         <Route
           path="/reseller"
-          element={
-            <ProtectedRoute>
-              <Reseller />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Reseller /></ProtectedRoute>}
         />
 
         <Route
           path="/admin"
-          element={
-            <ProtectedRoute>
-              <Admin />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Admin /></ProtectedRoute>}
         />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
-
       </Routes>
     </BrowserRouter>
   );
