@@ -1,23 +1,25 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Home from "./pages/Home";
 import Login from "./Login";
-import Signup from "./Signup";
 import Dashboard from "./Dashboard";
+
 import Leads from "./pages/Leads";
 import Skills from "./Skills";
 import Reseller from "./Reseller";
 import Admin from "./Admin";
 import NotFound from "./pages/NotFound";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
 
         {/* PROTECTED ROUTES */}
         <Route
@@ -67,6 +69,7 @@ export default function App() {
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
+
       </Routes>
     </BrowserRouter>
   );
