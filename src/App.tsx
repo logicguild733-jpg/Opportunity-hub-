@@ -16,7 +16,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* PUBLIC */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -47,7 +46,6 @@ export default function App() {
           element={<ProtectedRoute><Admin /></ProtectedRoute>}
         />
 
-        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
