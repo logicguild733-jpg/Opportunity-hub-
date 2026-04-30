@@ -1,124 +1,47 @@
-import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
-import { Search } from "lucide-react";
-
-import { useAllLeads, useLeadUsage } from "@/hooks/use-leads";
-import { useAuthMe } from "@/hooks/use-auth";
-
-import LeadCard from "@/LeadCard";
-import { Input } from "@/components/ui";
-import { getPlanLimit } from "@/lib/planLimits";
+import { useAuthMe } from "./hooks/use-auth";
+import { useLeads } from "./hooks/use-leads";
 
 export default function Dashboard() {
-  const { data: user } = useAuthMe();
-  const { data: allResponse, isLoading } = useAllLeads();
-  const { data: usageData } = useLeadUsage();
+  const { data: user, isLoading: userLoading } = useAuthMe();
+  const { data: leadsData, isLoading: leadsLoading } = useLeads();
 
-  const [search, setSearch] = useState("");
-
-  // ADMIN CHECK
-  const isAdmin =
-    user?.role === "admin" ||
-    user?.email === "logicguild733@gmail.com";
-
-  // PLAN
-  const plan = user?.subscription_plan || "basic";
-  const limit = getPlanLimit(plan);
-  const unlockLimit = limit === 100 ? null : limit;
-
-  // LEADS (SAFE NORMALIZED FIX)
-  const activeLeads =
-    allResponse?.leads ||
-    allResponse?.data ||
-    [];
-
-  const usage = usageData || allResponse?.usage;
-
-  // SEARCH FILTER
-  const filteredLeads = useMemo(() => {
-    const q = search.toLowerCase().trim();
-
-    return (activeLeads || []).filter((lead: any) => {
-      const text = `
-        ${lead.client_name || ""}
-        ${lead.description || ""}
-        ${lead.service_needed || ""}
-        ${lead.industry || ""}
-        ${lead.city || ""}
-        ${lead.country || ""}
-      `.toLowerCase();
-
-      return q === "" || text.includes(q);
-    });
-  }, [activeLeads, search]);
-
-  // INACTIVE ACCOUNT
-  if (user?.subscription_status === "inactive") {
+  if (userLoading || leadsLoading) {
     return (
-      <div className="p-6 text-center">
-        <h2 className="text-xl font-bold">Subscription Inactive</h2>
-        <p className="text-muted-foreground mt-2">
-          Please contact support to renew your subscription.
-        </p>
+      <div className="p-6">
+        <h2>Loading dashboard...</h2>
       </div>
     );
   }
 
+  if (!user) {
+    return (
+      <div className="p-6">
+        <h2>Not logged in</h2>
+      </div>
+    );
+  }
+
+  const leads = leadsData?.leads || [];
+
   return (
-    <div className="space-y-6 p-4">
-      {/* HEADER */}
-      <div className="flex justify-between items-center">
-        <div>
-          <motion.h1 className="text-3xl font-bold">
-            Welcome {user?.name || user?.email || "User"}
-          </motion.h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Welcome, {user.name || "User"} 👋</h1>
 
-          <p className="text-muted-foreground">
-            {isAdmin ? "Admin Dashboard" : "Your Leads Dashboard"}
-          </p>
-        </div>
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold">Your Leads</h2>
 
-        {isAdmin && (
-          <div className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-sm font-semibold">
-            ADMIN MODE
-          </div>
+        {leads.length === 0 ? (
+          <p className="mt-2 text-gray-500">No leads available</p>
+        ) : (
+          <ul className="mt-4 space-y-2">
+            {leads.map((lead: any, index: number) => (
+              <li key={index} className="p-3 border rounded">
+                {lead.title || "Untitled Lead"}
+              </li>
+            ))}
+          </ul>
         )}
       </div>
-
-      {/* PLAN INFO */}
-      <div className="text-sm text-muted-foreground">
-        Plan: <b>{plan}</b> | Limit:{" "}
-        <b>{unlockLimit === null ? "Unlimited" : unlockLimit}</b>
-        {usage?.used !== undefined && (
-          <> | Used: <b>{usage.used}</b></>
-        )}
-      </div>
-
-      {/* SEARCH */}
-      <div className="relative">
-        <Search className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
-        <Input
-          className="pl-9"
-          placeholder="Search leads..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
-      {/* LEADS */}
-      {isLoading ? (
-        <p className="text-center text-muted-foreground">Loading leads...</p>
-      ) : filteredLeads.length === 0 ? (
-        <p className="text-center text-muted-foreground">
-          No leads found
-        </p>
-      ) : (
-        <div className="grid md:grid-cols-3 gap-4">
-          {filteredLeads.map((lead: any, i: number) => (
-            <LeadCard key={lead.id || i} lead={lead} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
