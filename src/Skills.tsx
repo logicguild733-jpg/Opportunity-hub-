@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui";
+import { Button } from "./button"; // ✅ FIXED IMPORT
 
 export default function Skills() {
   const navigate = useNavigate();
@@ -24,11 +24,15 @@ export default function Skills() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-card border rounded-lg p-8 text-center">
-          <h2 className="text-xl font-semibold text-foreground mb-4">Skills Management (Coming Soon)</h2>
+          <h2 className="text-xl font-semibold text-foreground mb-4">
+            Skills Management (Coming Soon)
+          </h2>
           <p className="text-muted-foreground mb-6">
             Add and manage your skills to get matched with relevant opportunities.
           </p>
-          <Button onClick={() => navigate("/dashboard")}>Back to Dashboard</Button>
+          <Button onClick={() => navigate("/dashboard")}>
+            Back to Dashboard
+          </Button>
         </div>
       </div>
     </div>
