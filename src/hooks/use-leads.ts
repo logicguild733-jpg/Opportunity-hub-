@@ -1,9 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-
-const getAuthHeaders = (): Record<string, string> => {
-  const token = localStorage.getItem("opportunity_token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import { supabase } from "./lib/supabase"; // ✅ make sure path is correct
 
 export interface LeadUsage {
   plan: string;
@@ -18,72 +14,72 @@ export interface LeadsResponse {
 
 export function useLeads() {
   return useQuery<LeadsResponse>({
-    queryKey: ["/api/leads"],
+    queryKey: ["leads"],
     queryFn: async () => {
-      const res = await fetch("/api/leads", {
-        headers: { ...getAuthHeaders() },
-      });
-      if (!res.ok) throw new Error("Failed to fetch leads");
-      return res.json();
+      const { data, error } = await supabase
+        .from("leads")
+        .select("*")
+        .limit(20);
+
+      if (error) {
+        console.error(error);
+        throw new Error("Failed to fetch leads");
+      }
+
+      return {
+        leads: data || [],
+        usage: {
+          plan: "free",
+          unlock_limit: 10,
+        },
+      };
     },
   });
 }
 
 export function useAllLeads() {
   return useQuery<LeadsResponse>({
-    queryKey: ["/api/leads/all"],
+    queryKey: ["all-leads"],
     queryFn: async () => {
-      const res = await fetch("/api/leads/all", {
-        headers: { ...getAuthHeaders() },
-      });
-      if (!res.ok) throw new Error("Failed to fetch all leads");
-      return res.json();
+      const { data, error } = await supabase
+        .from("leads")
+        .select("*");
+
+      if (error) throw new Error("Failed to fetch all leads");
+
+      return {
+        leads: data || [],
+        usage: {
+          plan: "admin",
+          unlock_limit: null,
+        },
+      };
     },
   });
 }
 
 export function useLeadUsage() {
   return useQuery<LeadUsage>({
-    queryKey: ["/api/leads/usage"],
+    queryKey: ["lead-usage"],
     queryFn: async () => {
-      const res = await fetch("/api/leads/usage", {
-        headers: { ...getAuthHeaders() },
-      });
-      if (!res.ok) throw new Error("Failed to fetch usage");
-      return res.json();
+      return {
+        plan: "free",
+        unlock_limit: 10,
+      };
     },
-    refetchInterval: 60000,
   });
 }
 
-export interface Suggestion {
-  name: string;
-  url: string;
-  desc: string;
-  type: string;
-}
-
-export interface SuggestionsResponse {
-  suggestions: Suggestion[];
-  skill: string;
-  location: string | null;
-  message: string;
-}
-
-export function useLeadSuggestions(skill?: string, country?: string, city?: string, enabled = false) {
-  const params = new URLSearchParams();
-  if (skill) params.set("skill", skill);
-  if (country && country !== "All Countries") params.set("country", country);
-  if (city) params.set("city", city);
-  return useQuery<SuggestionsResponse>({
-    queryKey: ["/api/leads/suggestions", skill, country, city],
+export function useLeadSuggestions() {
+  return useQuery({
+    queryKey: ["lead-suggestions"],
     queryFn: async () => {
-      const res = await fetch(`/api/leads/suggestions?${params.toString()}`, {
-        headers: { ...getAuthHeaders() },
-      });
-      if (!res.ok) throw new Error("Failed to fetch suggestions");
-      return res.json();
+      return {
+        suggestions: [],
+        skill: "",
+        location: null,
+        message: "Coming soon",
+      };
     },
-    enabled,
   });
 }
