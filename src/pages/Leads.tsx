@@ -3,14 +3,17 @@ async function fetchLeads() {
   setErrorMsg("");
 
   try {
-    const res = await fetch("/api/leads");
-    const data = await res.json();
+    // TEMP STATIC DATA
+    const data = [
+      { title: "Demo Lead 1" },
+      { title: "Demo Lead 2" },
+    ];
 
-    setLeads(data || []);
+    setLeads(data);
   } catch (err: any) {
-    console.error("API error:", err.message);
+    console.error("Error:", err.message);
     setLeads([]);
-    setErrorMsg("Failed to fetch leads. Try again later.");
+    setErrorMsg("Something went wrong");
   } finally {
     setLoading(false);
   }
