@@ -10,8 +10,6 @@ import Reseller from "./Reseller";
 import Admin from "./Admin";
 import NotFound from "./pages/NotFound";
 
-import ProtectedRoute from "./ProtectedRoute";
-
 export default function App() {
   return (
     <BrowserRouter>
@@ -20,31 +18,12 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
 
-        {/* PROTECTED */}
-        <Route
-          path="/dashboard"
-          element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
-        />
-
-        <Route
-          path="/leads"
-          element={<ProtectedRoute><Leads /></ProtectedRoute>}
-        />
-
-        <Route
-          path="/skills"
-          element={<ProtectedRoute><Skills /></ProtectedRoute>}
-        />
-
-        <Route
-          path="/reseller"
-          element={<ProtectedRoute><Reseller /></ProtectedRoute>}
-        />
-
-        <Route
-          path="/admin"
-          element={<ProtectedRoute><Admin /></ProtectedRoute>}
-        />
+        {/* TEMPORARY: NO PROTECTION */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/leads" element={<Leads />} />
+        <Route path="/skills" element={<Skills />} />
+        <Route path="/reseller" element={<Reseller />} />
+        <Route path="/admin" element={<Admin />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
