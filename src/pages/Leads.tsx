@@ -3,7 +3,7 @@ async function fetchLeads() {
   setErrorMsg("");
 
   try {
-    // TEMP STATIC DATA
+    // TEMP SAFE FALLBACK DATA
     const data = [
       { title: "Demo Lead 1" },
       { title: "Demo Lead 2" },
