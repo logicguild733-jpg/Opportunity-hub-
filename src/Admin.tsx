@@ -4,8 +4,6 @@ import { ArrowLeft } from "lucide-react";
 export default function Admin() {
   const navigate = useNavigate();
 
-  console.log("[Admin] Rendering admin page");
-
   return (
     <div className="min-h-screen bg-background">
       {/* HEADER */}
