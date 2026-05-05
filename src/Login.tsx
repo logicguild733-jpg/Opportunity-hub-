@@ -1,8 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { motion } from "framer-motion";
 import { Briefcase, ArrowRight } from "lucide-react";
 import { useLogin } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -29,18 +28,18 @@ export default function Login() {
   const onSubmit = async (data: LoginForm) => {
     try {
       const result = await login.mutateAsync(data);
+
       toast.success("Welcome back!");
 
-      const role = (result as any)?.user?.role;
-      const email = (result as any)?.user?.email;
+      const user = (result as any)?.user;
 
-      if (role === "admin" || email === "logicguild733@gmail.com") {
+      if (user?.role === "admin" || user?.email === "logicguild733@gmail.com") {
         navigate("/admin");
       } else {
         navigate("/dashboard");
       }
     } catch (error: any) {
-      toast.error(error.message || "Failed to log in");
+      toast.error(error?.message || "Failed to log in");
     }
   };
 
@@ -67,7 +66,6 @@ export default function Login() {
           <div className="mt-10">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-              {/* EMAIL */}
               <div>
                 <label className="block mb-1 text-sm">Email</label>
                 <input
@@ -83,7 +81,6 @@ export default function Login() {
                 )}
               </div>
 
-              {/* PASSWORD */}
               <div>
                 <label className="block mb-1 text-sm">Password</label>
                 <input
@@ -98,7 +95,6 @@ export default function Login() {
                 )}
               </div>
 
-              {/* BUTTON */}
               <button
                 type="submit"
                 className="w-full bg-blue-500 text-white py-3 rounded flex items-center justify-center gap-2"
@@ -114,4 +110,3 @@ export default function Login() {
       </div>
     </div>
   );
-}
