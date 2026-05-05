@@ -1,11 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { Button } from "./button"; // ✅ FIXED IMPORT
+import { Button } from "@/components/ui/button"; // ✅ SAFE PATH
 
 export default function Skills() {
   const navigate = useNavigate();
-
-  console.log("[Skills] Rendering skills page");
 
   return (
     <div className="min-h-screen bg-background">
