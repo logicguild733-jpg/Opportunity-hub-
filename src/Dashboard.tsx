@@ -1,7 +1,12 @@
+type Lead = {
+  title: string;
+};
+
 export default function Dashboard() {
   // TEMP FAKE DATA (so UI always works)
   const user = { name: "Demo User" };
-  const leads = [
+
+  const leads: Lead[] = [
     { title: "Sample Lead 1" },
     { title: "Sample Lead 2" },
   ];
@@ -19,7 +24,7 @@ export default function Dashboard() {
           <p className="mt-2 text-gray-500">No leads available</p>
         ) : (
           <ul className="mt-4 space-y-2">
-            {leads.map((lead: any, index: number) => (
+            {leads.map((lead, index) => (
               <li key={index} className="p-3 border rounded">
                 {lead.title}
               </li>
